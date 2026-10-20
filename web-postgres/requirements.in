@@ -1,0 +1,6 @@
+# Top-level dependencies, exact versions. Regenerate requirements.txt after any change:
+#   uv pip compile requirements.in --generate-hashes --python-version 3.12 \
+#     --exclude-newer <YYYY-MM-DD, 14 days ago> -o requirements.txt
+fastapi==0.142.2
+uvicorn==0.54.0
+psycopg[binary]==3.3.6

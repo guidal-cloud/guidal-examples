@@ -1,0 +1,9 @@
+line-length = 120
+target-version = "py312"
+
+[lint]
+# pycodestyle, pyflakes, import order, bugbear, bandit (security), pyupgrade
+select = ["E", "F", "I", "B", "S", "UP"]
+
+[lint.isort]
+known-first-party = ["security"]

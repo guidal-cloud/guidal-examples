@@ -1,0 +1,4 @@
+# Top-level dependencies, exact versions (none yet: this example uses only the standard library).
+# After adding one, regenerate requirements.txt:
+#   uv pip compile requirements.in --generate-hashes --python-version 3.12 \
+#     --exclude-newer <YYYY-MM-DD, 14 days ago> -o requirements.txt
