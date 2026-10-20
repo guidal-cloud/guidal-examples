@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: ruff (pinned) and shellcheck
+        run: |
+          pipx run --spec ruff==0.16.10 ruff check .
+          pipx run --spec ruff==0.16.10 ruff format --check .
+          shellcheck scripts/*.sh
+
+  example:
+    name: ${{ matrix.app }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [web-nextjs, web-fastapi, web-postgres, worker-python, cron-python]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build (linux/amd64, like Guidal's builders)
+        run: docker build --platform linux/amd64 -t "example-${{ matrix.app }}" "${{ matrix.app }}"
+
+      - name: Smoke test with a read-only root filesystem, no capabilities, user 1000
+        run: scripts/smoke-test.sh "${{ matrix.app }}" "example-${{ matrix.app }}"
+
+      - name: Scan the image (fail on fixable HIGH/CRITICAL)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: example-${{ matrix.app }}
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+          format: table
