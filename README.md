@@ -66,6 +66,18 @@ the smoke test. The same applies to `node:` images.
   about 25 s after SIGTERM. Workers are allowed 30 s after SIGTERM, but today the worker wrapper exits as
   soon as it forwards the signal, so keep units of work short and safe to redo.
 
+## Contributing
+
+Fixes and new examples are welcome, from people and from coding agents. Read
+[CONTRIBUTING.md](https://github.com/guidal-cloud/.github/blob/main/CONTRIBUTING.md) first; a new
+example must pass `scripts/smoke-test.sh` and the CI scan like the others.
+
+## Security
+
+Report vulnerabilities privately as described in
+[SECURITY.md](https://github.com/guidal-cloud/.github/blob/main/SECURITY.md), never in a public
+issue.
+
 ## License
 
 [MIT](LICENSE)
