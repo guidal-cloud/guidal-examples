@@ -137,18 +137,21 @@ Config and secrets. `env` and `secrets link` take the **service ID** (from
 `guidal services list`), not the name. Each change restarts the service.
 
 ```bash
-guidal env set <service-id> LOG_LEVEL=info FEATURE_X=1     # non-secret config
+guidal env set <service-id> LOG_LEVEL=info FEATURE_X=1     # plain config only
 guidal env list <service-id>
 
-guidal secrets import --file ./secrets.env        # KEY=value lines; keeps values off argv
-guidal secrets link STRIPE_API_KEY --service <service-id>  # injected as env var STRIPE_API_KEY
 guidal secrets list                               # names only; values are never shown
+guidal secrets link STRIPE_API_KEY --service <service-id>  # injected as env var STRIPE_API_KEY
 ```
 
 Secrets belong to the project; linking one to a service injects it as an environment variable
-of the same name. Avoid `guidal secrets set KEY --value ...`: the value lands in shell history.
-Do not handle a user's secret values yourself when you can avoid it: give the user the command
-to run, and delete any `secrets.env` file afterwards (it is never uploaded, never commit it).
+of the same name. **Secret values are set in the Guidal console only** (Secrets → Create secret,
+or Import .env): you can't set one from your login (CLI or MCP session). Ask the user to set
+the value in the console, never to paste it into the conversation; when they confirm, link it.
+`guidal env set` is for plain configuration: the API refuses values that look like credentials
+(`env_value_looks_secret`) and names the console. Do not rename the variable, split the value or
+encode it to get past that, and never put a credential in a container command, a source file or a
+Dockerfile.
 
 Local MCP server (Claude Code plugin):
 
@@ -158,13 +161,12 @@ get_build_status(build_id="...", wait_seconds=55)   # repeat until it finishes
 get_service(service_id="...", wait_seconds=55)
 create_database(name="app-db", type="postgresql")
 link_database(database_id="...", service_id="...")
-set_env_vars(service_id="...", env_vars={"LOG_LEVEL": "info"})   # one restart for all keys
-call_capability("set_secret", {"key": "STRIPE_API_KEY", "value": "..."})
-call_capability("link_secret", {"key": "STRIPE_API_KEY", "service_id": "..."})
+set_env_vars(service_id="...", env_vars={"LOG_LEVEL": "info"})   # plain config; one restart for all keys
+call_capability("link_secret", {"key": "STRIPE_API_KEY", "service_id": "..."})  # after the user sets it in the console
 ```
 
-A value passed to `set_secret` is visible in the conversation; prefer asking the user to run
-`guidal secrets import`. `deploy_from_source` creates a web service or rolls a new image onto
+There is no MCP tool that sets a secret value: the user sets it in the Guidal console, then
+you link it. `deploy_from_source` creates a web service or rolls a new image onto
 it. For a worker or cron job, build with `deploy=False`, take the image from
 `get_build_status`, then `create_service(type="worker", command=...)` or
 `call_capability("create_cron_job", {...})`. The hosted MCP server cannot read your disk: there,
