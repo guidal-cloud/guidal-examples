@@ -3,7 +3,7 @@
 # and replace both FROM lines.
 
 # --- build stage: install dependencies (none yet), verified by hash ---
-FROM python:3.12.15-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1 AS build
+FROM python:3.12.16-slim@sha256:4840d514c583a4d3d8cad3940e68dee6f0f6f3635c12fcd0a3d74c21a5b93a54 AS build
 RUN python -m venv --without-pip /venv
 COPY requirements.txt .
 RUN if grep -q '^[^#]' requirements.txt; then \
@@ -12,7 +12,7 @@ RUN if grep -q '^[^#]' requirements.txt; then \
     fi
 
 # --- runtime stage ---
-FROM python:3.12.15-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1
+FROM python:3.12.16-slim@sha256:4840d514c583a4d3d8cad3940e68dee6f0f6f3635c12fcd0a3d74c21a5b93a54
 # No package manager at runtime: remove pip and the ensurepip wheel it could be
 # reinstalled from, so the running image has no installer.
 RUN python -m pip uninstall --yes --no-cache-dir pip \

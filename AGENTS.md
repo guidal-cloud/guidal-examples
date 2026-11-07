@@ -70,7 +70,7 @@ Platform contract:
 
 Security by default (keep these when you change the example):
 
-6. Base images pinned by tag **and** digest: `FROM python:3.12.15-slim@sha256:...`. Get a
+6. Base images pinned by tag **and** digest: `FROM python:3.12.16-slim@sha256:...`. Get a
    digest with `docker buildx imagetools inspect <image:tag>`.
 7. Multi-stage build. The final stage holds the runtime, the dependencies and the app only:
    no compilers, no pip/npm caches, no package managers, no tests, no `.env`.
